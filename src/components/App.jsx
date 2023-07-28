@@ -1,23 +1,43 @@
+import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { addContact, deleteContact, filterContact } from 'redux/contactsSlice';
+import { filterContact } from 'redux/contactsSlice';
+import {
+  selectError,
+  selectFilter,
+  selectIsLoading,
+  selectItems,
+} from 'redux/selectors';
 
+import {
+  addContactThunk,
+  deleteContactThunk,
+  fetchContactThunk,
+} from 'redux/contactsThunk';
+import Loader from './Loader/Loader';
 import { Section } from './WraperStyled';
 import Form from './Form/Form';
 import Filter from './Filter/Filter';
 import Contacts from './Contacts/Contacts';
 
 export default function App() {
-  const { contacts, filter } = useSelector(state => state.contacts);
+  const items = useSelector(selectItems);
+  const isLoading = useSelector(selectIsLoading);
+  const error = useSelector(selectError);
+  const filter = useSelector(selectFilter);
 
   const dispatch = useDispatch();
 
+  useEffect(() => {
+    dispatch(fetchContactThunk());
+  }, [dispatch]);
+
   const formAddContact = contactData => {
-    const search = contacts.find(contact => contact.name === contactData.name);
+    const search = items.find(contact => contact.name === contactData.name);
     if (search) {
       alert(`${contactData.name} is already in Contacts`);
       return;
     }
-    dispatch(addContact(contactData));
+    dispatch(addContactThunk(contactData));
   };
 
   const handleOnChangeFilter = event => {
@@ -25,12 +45,12 @@ export default function App() {
   };
 
   const normalize = filter ? filter.toLowerCase() : '';
-  const findContacts = contacts.filter(contact =>
+  const findContacts = items.filter(contact =>
     contact.name.toLowerCase().includes(normalize)
   );
 
   const onRemoveContact = contactId => {
-    dispatch(deleteContact(contactId));
+    dispatch(deleteContactThunk(contactId));
   };
 
   return (
@@ -38,9 +58,13 @@ export default function App() {
       <Section>
         <h1>PhoneBook</h1>
 
-        <Form formAddContact={formAddContact} contactsArray={contacts} />
+        <Form formAddContact={formAddContact} contactsArray={items} />
         <h2>Contacts</h2>
         <Filter value={filter} handleOnChangeFilter={handleOnChangeFilter} />
+
+        {isLoading && <Loader />}
+        {error && <p>{error}</p>}
+
         <Contacts
           findContacts={findContacts}
           onRemoveContact={onRemoveContact}
