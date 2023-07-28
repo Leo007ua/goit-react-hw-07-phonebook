@@ -1,13 +1,10 @@
-const { createSlice, nanoid } = require('@reduxjs/toolkit');
+import initialState from './initialState';
 
-const initialState = {
-  contacts: [],
-  filter: '',
-};
+const { createSlice, nanoid } = require('@reduxjs/toolkit');
 
 const contactsSlice = createSlice({
   name: 'contacts',
-  initialState,
+  initialState: initialState,
 
   reducers: {
     addContact: {
@@ -18,8 +15,9 @@ const contactsSlice = createSlice({
         return {
           payload: {
             id: nanoid(),
-            name: contact.name,
-            number: contact.number,
+            // name: contact.name,
+            // number: contact.number,
+            contact: `...contact`,
           },
         };
       },
@@ -37,34 +35,3 @@ const contactsSlice = createSlice({
 
 export const { addContact, deleteContact, filterContact } = contactsSlice.actions;
 export const contactsReducer = contactsSlice.reducer;
-
-// export const contactsReducer = (state = initialState, action) => {
-//   switch (action.type) {
-//     case 'form/setNameContact':
-//       return {
-//         ...state,
-//         nameContact: action.payload,
-//       };
-//     case 'form/setNumber':
-//       return {
-//         ...state,
-//         number: action.payload,
-//       };
-//     default:
-//       return state;
-//   }
-// };
-
-// export const setNameContact = payload => {
-//   return {
-//     type: 'form/setNameContact',
-//     payload,
-//   };
-// };
-
-// export const setNumber = payload => {
-//   return {
-//     type: 'form/setNumber',
-//     payload,
-//   };
-// };

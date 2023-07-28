@@ -63,7 +63,6 @@ function Form({ formAddContact }) {
 
 Form.propTypes = {
   formAddContact: PropTypes.func.isRequired,
-  contactsArr: PropTypes.array,
 };
 
 export default Form;
